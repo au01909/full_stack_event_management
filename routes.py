@@ -39,6 +39,11 @@ def index():
         flash('Error loading events', 'error')
         return render_template('index.html', events=[], stats={})
 
+@app.route('/about')
+def about():
+    """About page explaining how EventEase works"""
+    return render_template('about.html')
+
 # REST API Endpoints
 
 @app.route('/api/events', methods=['GET'])

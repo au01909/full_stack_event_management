@@ -12,11 +12,6 @@
                 Event Management Dashboard
             </h1>
             <p class="lead">Manage your events efficiently with EventEase</p>
-            <div class="mt-4">
-                <button class="btn btn-primary btn-lg px-5 py-3" data-bs-toggle="modal" data-bs-target="#eventModal" onclick="openEventModal()">
-                    <i class="fas fa-plus me-2"></i>Create New Event
-                </button>
-            </div>
         </div>
     </div>
 
@@ -53,6 +48,11 @@
                     </div>
                 </div>
             </div>
+        </div>
+        <div class="col-12 text-center mt-4">
+            <button class="btn btn-primary btn-lg px-5 py-3" data-bs-toggle="modal" data-bs-target="#eventModal" onclick="openEventModal()">
+                <i class="fas fa-plus me-2"></i>Create New Event
+            </button>
         </div>
     </div>
 
@@ -193,7 +193,7 @@
                         </p>
                         <div class="d-flex gap-3 justify-content-center flex-wrap">
                             <button class="btn btn-primary btn-lg px-4" data-bs-toggle="modal" data-bs-target="#eventModal" onclick="openEventModal()">
-                                <i class="fas fa-plus me-2"></i>Create Your First Event
+                                <i class="fas fa-plus me-2"></i>Add Event
                             </button>
                             {% if search or tag_filter %}
                             <button class="btn btn-outline-secondary btn-lg px-4" onclick="clearFilters()">
