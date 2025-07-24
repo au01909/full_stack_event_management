@@ -1,56 +1,84 @@
 from datetime import datetime
-from typing import Dict, List, Optional
-import uuid
+from flask_login import UserMixin
+from werkzeug.security import generate_password_hash, check_password_hash
+from app import db
 
-class Event:
-    """Event model class for managing event data"""
+
+class User(UserMixin, db.Model):
+    __tablename__ = 'users'
     
-    def __init__(self, name: str, date: str, location: str, description: str = "", tags: Optional[List[str]] = None, event_id: Optional[str] = None):
-        self.id = event_id or str(uuid.uuid4())
-        self.name = name
-        self.date = date
-        self.location = location
-        self.description = description
-        self.tags = tags or []
-        self.created_at = datetime.now().isoformat()
-        self.updated_at = datetime.now().isoformat()
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password_hash = db.Column(db.String(256), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
-    def to_dict(self) -> Dict:
-        """Convert event to dictionary for JSON serialization"""
+    # Relationship with events
+    events = db.relationship('Event', backref='owner', lazy=True, cascade='all, delete-orphan')
+    
+    def set_password(self, password):
+        """Hash and set the password"""
+        self.password_hash = generate_password_hash(password)
+    
+    def check_password(self, password):
+        """Check if provided password matches the hash"""
+        return check_password_hash(self.password_hash, password)
+    
+    def __repr__(self):
+        return f'<User {self.username}>'
+
+
+class Event(db.Model):
+    __tablename__ = 'events'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(200), nullable=False)
+    date = db.Column(db.String(50), nullable=False)
+    location = db.Column(db.String(200), nullable=False)
+    description = db.Column(db.Text, nullable=True)
+    tags = db.Column(db.Text, nullable=True)  # Store as comma-separated string
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    # Foreign key to User
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    
+    def to_dict(self):
         return {
             'id': self.id,
             'name': self.name,
             'date': self.date,
             'location': self.location,
             'description': self.description,
-            'tags': self.tags,
-            'created_at': self.created_at,
-            'updated_at': self.updated_at
+            'tags': self.tags.split(',') if self.tags else [],
+            'created_at': self.created_at.isoformat() if self.created_at else None,
+            'updated_at': self.updated_at.isoformat() if self.updated_at else None,
+            'user_id': self.user_id
         }
     
     @classmethod
-    def from_dict(cls, data: Dict) -> 'Event':
-        """Create event from dictionary"""
+    def from_dict(cls, data, user_id):
+        """Create Event from dictionary with user_id"""
         event = cls(
             name=data['name'],
             date=data['date'],
             location=data['location'],
-            description=data.get('description', ''),
-            tags=data.get('tags', []),
-            event_id=data.get('id')
+            description=data['description'],
+            tags=','.join(data.get('tags', [])),
+            user_id=user_id
         )
-        event.created_at = data.get('created_at', event.created_at)
-        event.updated_at = data.get('updated_at', event.updated_at)
         return event
     
-    def update(self, **kwargs):
-        """Update event fields"""
-        for key, value in kwargs.items():
-            if hasattr(self, key) and key != 'id':
-                setattr(self, key, value)
-        self.updated_at = datetime.now().isoformat()
+    def update_from_dict(self, data):
+        """Update event fields from dictionary"""
+        self.name = data.get('name', self.name)
+        self.date = data.get('date', self.date)
+        self.location = data.get('location', self.location)
+        self.description = data.get('description', self.description)
+        self.tags = ','.join(data.get('tags', [])) if data.get('tags') else self.tags
+        self.updated_at = datetime.utcnow()
     
-    def validate(self) -> List[str]:
+    def validate(self):
         """Validate event data and return list of errors"""
         errors = []
         
@@ -68,13 +96,16 @@ class Event:
         if not self.location or not self.location.strip():
             errors.append("Event location is required")
         
-        if len(self.name) > 100:
-            errors.append("Event name must be less than 100 characters")
+        if len(self.name) > 200:
+            errors.append("Event name must be less than 200 characters")
         
         if len(self.location) > 200:
             errors.append("Location must be less than 200 characters")
         
-        if len(self.description) > 1000:
+        if self.description and len(self.description) > 1000:
             errors.append("Description must be less than 1000 characters")
         
         return errors
+    
+    def __repr__(self):
+        return f'<Event {self.name}>'
