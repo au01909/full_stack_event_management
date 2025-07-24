@@ -221,6 +221,110 @@ main {
     box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
 }
 
+/* Event Card Specific Styles with Enhanced Hover Effects */
+.event-card {
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.event-card .glass-card {
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(31, 38, 135, 0.2);
+}
+
+.event-card .glass-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transition: left 0.5s ease;
+    z-index: 1;
+}
+
+.event-card:hover .glass-card {
+    transform: translateY(-8px) scale(1.02);
+    border-color: rgba(79, 172, 254, 0.6);
+    box-shadow: 
+        0 15px 45px rgba(31, 38, 135, 0.6),
+        0 0 20px rgba(79, 172, 254, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.event-card:hover .glass-card::before {
+    left: 100%;
+}
+
+.event-card:hover .gradient-text {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 50%, #667eea 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 0 10px rgba(79, 172, 254, 0.3);
+}
+
+.event-card .card-body {
+    position: relative;
+    z-index: 2;
+}
+
+/* Event Meta Hover Effects */
+.event-card:hover .event-meta {
+    color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.event-card:hover .badge {
+    transform: scale(1.05);
+    box-shadow: 0 2px 8px rgba(79, 172, 254, 0.4);
+}
+
+/* Button Hover Effects in Event Cards */
+.event-card .btn-group .btn {
+    transition: all 0.2s ease;
+    border-radius: 6px;
+}
+
+.event-card:hover .btn-outline-primary {
+    border-color: rgba(79, 172, 254, 0.6);
+    color: #4facfe;
+}
+
+.event-card:hover .btn-outline-danger {
+    border-color: rgba(220, 53, 69, 0.6);
+    color: #dc3545;
+}
+
+.event-card:hover .btn-outline-primary:hover {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    border-color: #4facfe;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(79, 172, 254, 0.4);
+}
+
+.event-card:hover .btn-outline-danger:hover {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    border-color: #dc3545;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
+}
+
+/* Enhanced separator between event cards */
+.event-card {
+    margin-bottom: 1.5rem;
+    padding: 0.25rem;
+}
+
+.event-card:hover {
+    padding: 0;
+}
+
 /* Error message styling */
 .alert {
     border: none;

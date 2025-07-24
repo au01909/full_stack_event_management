@@ -2,7 +2,7 @@
 
 ## Overview
 
-EventEase is a Flask-based web application for managing events with a modern, visually appealing interface. The application provides comprehensive CRUD operations for events with advanced features like search, filtering, sorting, and tagging. It uses JSON file storage for data persistence and features a stunning glassmorphism design with gradient backgrounds, enhanced animations, and professional UI elements built with Bootstrap.
+EventEase is a Flask-based web application for managing events with secure user authentication and user-specific event management. The application provides comprehensive CRUD operations for events with advanced features like search, filtering, sorting, and tagging. It uses PostgreSQL database for data persistence with Flask-Login for authentication, and features a stunning glassmorphism design with gradient backgrounds, enhanced animations, and professional UI elements built with Bootstrap.
 
 ## User Preferences
 
@@ -26,9 +26,10 @@ Preferred communication style: Simple, everyday language.
 - **Logging**: Built-in Python logging for debugging and monitoring
 
 ### Data Storage
-- **Primary Storage**: JSON file-based persistence (`events_data.json`)
-- **Rationale**: Simple, lightweight solution without external database dependencies
-- **Data Model**: Event objects with UUID identifiers, timestamps, and metadata
+- **Primary Storage**: PostgreSQL database with SQLAlchemy ORM
+- **Authentication**: Flask-Login with secure password hashing using Werkzeug
+- **Data Models**: User and Event models with proper relationships and foreign keys
+- **Security**: User-specific data isolation - users can only access their own events
 
 ## Key Components
 

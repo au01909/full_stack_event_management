@@ -328,27 +328,39 @@
 
             bindEvents() {
                 // Create event buttons
-                document.getElementById('createEventBtn')?.addEventListener('click', () => this.showCreateModal());
-                document.getElementById('createFirstEventBtn')?.addEventListener('click', () => this.showCreateModal());
+                const createBtn = document.getElementById('createEventBtn');
+                const createFirstBtn = document.getElementById('createFirstEventBtn');
+                const saveBtn = document.getElementById('saveEventBtn');
+                const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+                const searchInput = document.getElementById('searchInput');
+                const sortBy = document.getElementById('sortBy');
+                const sortOrder = document.getElementById('sortOrder');
+                const tagFilter = document.getElementById('tagFilter');
                 
-                // Save event button
-                document.getElementById('saveEventBtn')?.addEventListener('click', () => this.saveEvent());
-                
-                // Delete confirmation
-                document.getElementById('confirmDeleteBtn')?.addEventListener('click', () => this.confirmDelete());
-                
-                // Search and filter inputs
-                document.getElementById('searchInput')?.addEventListener('input', () => this.handleSearchAndFilter());
-                document.getElementById('sortBy')?.addEventListener('change', () => this.handleSearchAndFilter());
-                document.getElementById('sortOrder')?.addEventListener('change', () => this.handleSearchAndFilter());
-                document.getElementById('tagFilter')?.addEventListener('input', () => this.handleSearchAndFilter());
+                if (createBtn) createBtn.addEventListener('click', () => this.showCreateModal());
+                if (createFirstBtn) createFirstBtn.addEventListener('click', () => this.showCreateModal());
+                if (saveBtn) saveBtn.addEventListener('click', () => this.saveEvent());
+                if (confirmDeleteBtn) confirmDeleteBtn.addEventListener('click', () => this.confirmDelete());
+                if (searchInput) searchInput.addEventListener('input', () => this.handleSearchAndFilter());
+                if (sortBy) sortBy.addEventListener('change', () => this.handleSearchAndFilter());
+                if (sortOrder) sortOrder.addEventListener('change', () => this.handleSearchAndFilter());
+                if (tagFilter) tagFilter.addEventListener('input', () => this.handleSearchAndFilter());
             }
 
             setupSearch() {
                 let searchTimeout;
                 const searchInput = document.getElementById('searchInput');
+                const tagFilter = document.getElementById('tagFilter');
+                
                 if (searchInput) {
                     searchInput.addEventListener('input', () => {
+                        clearTimeout(searchTimeout);
+                        searchTimeout = setTimeout(() => this.loadEvents(), 300);
+                    });
+                }
+                
+                if (tagFilter) {
+                    tagFilter.addEventListener('input', () => {
                         clearTimeout(searchTimeout);
                         searchTimeout = setTimeout(() => this.loadEvents(), 300);
                     });
