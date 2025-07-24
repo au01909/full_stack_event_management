@@ -1,1 +1,22 @@
-{}
+{
+  "78135dbc-9dfc-40e4-86c9-22636023ff93": {
+    "id": "78135dbc-9dfc-40e4-86c9-22636023ff93",
+    "name": "marriage",
+    "date": "2025-07-25T12:00",
+    "location": "bangalore",
+    "description": "friends marriage",
+    "tags": [],
+    "created_at": "2025-07-24T12:55:00.498705",
+    "updated_at": "2025-07-24T12:55:00.498712"
+  },
+  "19dbfa95-705a-4e81-a4c2-e1af1692862c": {
+    "id": "19dbfa95-705a-4e81-a4c2-e1af1692862c",
+    "name": "marriage_",
+    "date": "2025-07-24T12:00",
+    "location": "bangalore",
+    "description": "marriage",
+    "tags": [],
+    "created_at": "2025-07-24T12:55:47.747845",
+    "updated_at": "2025-07-24T12:55:47.747849"
+  }
+}
