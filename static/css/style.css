@@ -1,13 +1,25 @@
 /* Custom styles for EventEase */
 
-/* General improvements */
+/* Modern gradient background */
+body {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    min-height: 100vh;
+}
+
+/* Enhanced card styling */
 .card {
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    transition: all 0.3s ease-in-out;
+    border: none;
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.05);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
 .card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    background: rgba(255, 255, 255, 0.08);
 }
 
 /* Loading states */
@@ -25,28 +37,109 @@
     border-color: var(--bs-success);
 }
 
-/* Search and filter section */
+/* Navigation bar enhancement */
+.navbar {
+    background: rgba(0, 0, 0, 0.3) !important;
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.5rem;
+    background: linear-gradient(45deg, #4facfe, #00f2fe);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Enhanced search and filter section */
 .input-group-text {
-    background-color: var(--bs-secondary-bg);
-    border-color: var(--bs-border-color);
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
 }
 
-/* Event cards */
+.form-control, .form-select {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    border-radius: 8px;
+}
+
+.form-control:focus, .form-select:focus {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: #4facfe;
+    box-shadow: 0 0 0 0.25rem rgba(79, 172, 254, 0.25);
+    color: #fff;
+}
+
+.form-control::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* Event cards enhancement */
 .card-header {
-    background-color: var(--bs-secondary-bg);
-    border-bottom: 1px solid var(--bs-border-color);
+    background: linear-gradient(135deg, rgba(79, 172, 254, 0.2), rgba(0, 242, 254, 0.2));
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px 12px 0 0 !important;
 }
 
-/* Badge styles */
+/* Enhanced buttons */
+.btn-primary {
+    background: linear-gradient(135deg, #4facfe, #00f2fe);
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    padding: 12px 24px;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #00f2fe, #4facfe);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(79, 172, 254, 0.4);
+}
+
+.btn-outline-secondary {
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: rgba(255, 255, 255, 0.8);
+    border-radius: 8px;
+}
+
+.btn-outline-secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.5);
+    color: #fff;
+}
+
+/* Enhanced badge styles */
 .badge {
     font-size: 0.75em;
     font-weight: 500;
+    padding: 6px 12px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, rgba(79, 172, 254, 0.8), rgba(0, 242, 254, 0.8));
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-/* Modal improvements */
+/* Modal enhancements */
 .modal-content {
     border: none;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    background: rgba(20, 30, 60, 0.95);
+    backdrop-filter: blur(20px);
+}
+
+.modal-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    background: linear-gradient(135deg, rgba(79, 172, 254, 0.1), rgba(0, 242, 254, 0.1));
+    border-radius: 16px 16px 0 0;
+}
+
+.modal-footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 /* Button loading state */
@@ -134,9 +227,74 @@ main {
     border-radius: 0.5rem;
 }
 
-/* Statistics cards */
+/* Statistics cards enhancement */
 .card .fa-2x {
-    opacity: 0.8;
+    opacity: 0.9;
+    background: linear-gradient(135deg, #4facfe, #00f2fe);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Header improvements */
+.display-6 {
+    background: linear-gradient(135deg, #ffffff, #e0e7ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 700;
+}
+
+.lead {
+    color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Footer enhancement */
+footer {
+    background: rgba(0, 0, 0, 0.3) !important;
+    backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Dropdown improvements */
+.dropdown-menu {
+    background: rgba(20, 30, 60, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+}
+
+.dropdown-item {
+    color: rgba(255, 255, 255, 0.8);
+    transition: all 0.2s ease;
+}
+
+.dropdown-item:hover {
+    background: rgba(79, 172, 254, 0.2);
+    color: #fff;
+}
+
+/* Alert improvements */
+.alert {
+    background: rgba(79, 172, 254, 0.1);
+    border: 1px solid rgba(79, 172, 254, 0.3);
+    color: #fff;
+    backdrop-filter: blur(10px);
+}
+
+.alert-danger {
+    background: rgba(220, 53, 69, 0.1);
+    border-color: rgba(220, 53, 69, 0.3);
+}
+
+/* Loading animation */
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.loading {
+    animation: pulse 1.5s ease-in-out infinite;
 }
 
 /* Tag filter dropdown */

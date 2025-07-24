@@ -524,3 +524,10 @@ function clearFilters() {
     
     eventManager.loadEvents();
 }
+
+function refreshEvents() {
+    eventManager.loadEvents();
+    eventManager.updateStats();
+    eventManager.showToast('Events refreshed successfully');
+}
+}

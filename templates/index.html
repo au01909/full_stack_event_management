@@ -3,88 +3,122 @@
 {% block content %}
 <div class="container">
     <!-- Header Section -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <h1 class="display-6 mb-3">
-                <i class="fas fa-calendar-alt text-primary me-3"></i>Event Management Dashboard
+    <div class="row mb-5">
+        <div class="col-12 text-center">
+            <div class="mb-4">
+                <i class="fas fa-calendar-alt fa-4x mb-3" style="background: linear-gradient(135deg, #4facfe, #00f2fe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;"></i>
+            </div>
+            <h1 class="display-4 mb-3 fw-bold">
+                Event Management Dashboard
             </h1>
-            <p class="lead text-muted">Manage your events efficiently with EventEase</p>
+            <p class="lead">Manage your events efficiently with EventEase</p>
+            <div class="mt-4">
+                <button class="btn btn-primary btn-lg px-5 py-3" data-bs-toggle="modal" data-bs-target="#eventModal" onclick="openEventModal()">
+                    <i class="fas fa-plus me-2"></i>Create New Event
+                </button>
+            </div>
         </div>
     </div>
 
     <!-- Statistics Cards -->
-    <div class="row mb-4">
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-body text-center">
-                    <i class="fas fa-calendar-check fa-2x text-success mb-3"></i>
-                    <h4 class="card-title">{{ stats.total_events or 0 }}</h4>
-                    <p class="card-text text-muted">Total Events</p>
+    <div class="row mb-5">
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center p-4">
+                    <div class="d-flex align-items-center justify-content-center mb-3">
+                        <i class="fas fa-calendar-check fa-3x me-3"></i>
+                        <div>
+                            <h2 class="mb-0 fw-bold">{{ stats.total_events or 0 }}</h2>
+                            <p class="text-muted mb-0">Total Events</p>
+                        </div>
+                    </div>
+                    <div class="progress" style="height: 6px; background: rgba(255,255,255,0.1);">
+                        <div class="progress-bar" style="width: {{ (stats.total_events or 0) * 10 }}%; background: linear-gradient(90deg, #4facfe, #00f2fe);"></div>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-body text-center">
-                    <i class="fas fa-tags fa-2x text-info mb-3"></i>
-                    <h4 class="card-title">{{ stats.unique_tags or 0 }}</h4>
-                    <p class="card-text text-muted">Unique Tags</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-body text-center">
-                    <button class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#eventModal" onclick="openEventModal()">
-                        <i class="fas fa-plus me-2"></i>Add New Event
-                    </button>
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center p-4">
+                    <div class="d-flex align-items-center justify-content-center mb-3">
+                        <i class="fas fa-tags fa-3x me-3"></i>
+                        <div>
+                            <h2 class="mb-0 fw-bold">{{ stats.unique_tags or 0 }}</h2>
+                            <p class="text-muted mb-0">Unique Tags</p>
+                        </div>
+                    </div>
+                    <div class="progress" style="height: 6px; background: rgba(255,255,255,0.1);">
+                        <div class="progress-bar" style="width: {{ (stats.unique_tags or 0) * 8 }}%; background: linear-gradient(90deg, #00f2fe, #4facfe);"></div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Filters and Search -->
-    <div class="card mb-4">
-        <div class="card-body">
-            <div class="row g-3">
-                <div class="col-md-4">
-                    <label for="searchInput" class="form-label">Search Events</label>
+    <div class="card mb-5" style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1);">
+        <div class="card-header">
+            <h5 class="mb-0">
+                <i class="fas fa-filter me-2"></i>Search & Filter Events
+            </h5>
+        </div>
+        <div class="card-body p-4">
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <label for="searchInput" class="form-label fw-semibold">
+                        <i class="fas fa-search me-1"></i>Search Events
+                    </label>
                     <div class="input-group">
-                        <span class="input-group-text"><i class="fas fa-search"></i></span>
-                        <input type="text" class="form-control" id="searchInput" placeholder="Search by name, location, or description..." value="{{ search }}">
+                        <span class="input-group-text">
+                            <i class="fas fa-search"></i>
+                        </span>
+                        <input type="text" class="form-control" id="searchInput" 
+                               placeholder="Search by name, location, or description..." 
+                               value="{{ search }}">
                     </div>
                 </div>
                 <div class="col-md-3">
-                    <label for="sortBy" class="form-label">Sort By</label>
+                    <label for="sortBy" class="form-label fw-semibold">
+                        <i class="fas fa-sort me-1"></i>Sort By
+                    </label>
                     <select class="form-select" id="sortBy">
-                        <option value="date" {{ 'selected' if sort_by == 'date' }}>Date</option>
-                        <option value="name" {{ 'selected' if sort_by == 'name' }}>Name</option>
-                        <option value="location" {{ 'selected' if sort_by == 'location' }}>Location</option>
-                        <option value="created_at" {{ 'selected' if sort_by == 'created_at' }}>Created</option>
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <label for="sortOrder" class="form-label">Order</label>
-                    <select class="form-select" id="sortOrder">
-                        <option value="asc" {{ 'selected' if sort_order == 'asc' }}>Ascending</option>
-                        <option value="desc" {{ 'selected' if sort_order == 'desc' }}>Descending</option>
+                        <option value="date" {{ 'selected' if sort_by == 'date' }}>📅 Date</option>
+                        <option value="name" {{ 'selected' if sort_by == 'name' }}>📝 Name</option>
+                        <option value="location" {{ 'selected' if sort_by == 'location' }}>📍 Location</option>
+                        <option value="created_at" {{ 'selected' if sort_by == 'created_at' }}>🕒 Created</option>
                     </select>
                 </div>
                 <div class="col-md-3">
-                    <label for="tagFilter" class="form-label">Filter by Tag</label>
+                    <label for="sortOrder" class="form-label fw-semibold">
+                        <i class="fas fa-arrow-up-down me-1"></i>Order
+                    </label>
+                    <select class="form-select" id="sortOrder">
+                        <option value="asc" {{ 'selected' if sort_order == 'asc' }}>⬆️ Ascending</option>
+                        <option value="desc" {{ 'selected' if sort_order == 'desc' }}>⬇️ Descending</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="tagFilter" class="form-label fw-semibold">
+                        <i class="fas fa-tags me-1"></i>Filter by Tag
+                    </label>
                     <select class="form-select" id="tagFilter">
-                        <option value="">All Tags</option>
+                        <option value="">🏷️ All Tags</option>
                         {% for tag in stats.all_tags %}
                             <option value="{{ tag }}" {{ 'selected' if tag_filter == tag }}>{{ tag }}</option>
                         {% endfor %}
                     </select>
                 </div>
-            </div>
-            <div class="row mt-3">
-                <div class="col-12">
-                    <button class="btn btn-outline-secondary" onclick="clearFilters()">
-                        <i class="fas fa-times me-1"></i>Clear Filters
-                    </button>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Actions</label>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-secondary flex-fill" onclick="clearFilters()">
+                            <i class="fas fa-times me-1"></i>Clear Filters
+                        </button>
+                        <button class="btn btn-outline-primary flex-fill" onclick="refreshEvents()">
+                            <i class="fas fa-refresh me-1"></i>Refresh
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -142,20 +176,31 @@
             {% endfor %}
         {% else %}
             <div class="col-12">
-                <div class="card">
-                    <div class="card-body text-center py-5">
-                        <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
-                        <h4>No Events Found</h4>
-                        <p class="text-muted">
+                <div class="card text-center" style="min-height: 400px; display: flex; align-items: center;">
+                    <div class="card-body py-5">
+                        <div class="mb-4">
+                            <i class="fas fa-calendar-times fa-5x mb-4" style="opacity: 0.3;"></i>
+                        </div>
+                        <h3 class="mb-3">No Events Found</h3>
+                        <p class="lead text-muted mb-4">
                             {% if search or tag_filter %}
-                                No events match your current filters. Try adjusting your search criteria.
+                                No events match your current filters.<br>
+                                Try adjusting your search criteria or clear the filters.
                             {% else %}
-                                Get started by creating your first event!
+                                Welcome to EventEase!<br>
+                                Get started by creating your first event.
                             {% endif %}
                         </p>
-                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#eventModal" onclick="openEventModal()">
-                            <i class="fas fa-plus me-2"></i>Create Your First Event
-                        </button>
+                        <div class="d-flex gap-3 justify-content-center flex-wrap">
+                            <button class="btn btn-primary btn-lg px-4" data-bs-toggle="modal" data-bs-target="#eventModal" onclick="openEventModal()">
+                                <i class="fas fa-plus me-2"></i>Create Your First Event
+                            </button>
+                            {% if search or tag_filter %}
+                            <button class="btn btn-outline-secondary btn-lg px-4" onclick="clearFilters()">
+                                <i class="fas fa-times me-2"></i>Clear Filters
+                            </button>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
             </div>

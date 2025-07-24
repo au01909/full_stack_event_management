@@ -2,7 +2,7 @@
 
 ## Overview
 
-EventEase is a Flask-based web application for managing events with a simple, intuitive interface. The application provides CRUD operations for events with features like search, filtering, sorting, and tagging. It uses JSON file storage for data persistence and includes a modern dark-themed UI built with Bootstrap.
+EventEase is a Flask-based web application for managing events with a modern, visually appealing interface. The application provides comprehensive CRUD operations for events with advanced features like search, filtering, sorting, and tagging. It uses JSON file storage for data persistence and features a stunning glassmorphism design with gradient backgrounds, enhanced animations, and professional UI elements built with Bootstrap.
 
 ## User Preferences
 
@@ -12,10 +12,11 @@ Preferred communication style: Simple, everyday language.
 
 ### Frontend Architecture
 - **Technology**: HTML templates with Jinja2 templating engine
-- **UI Framework**: Bootstrap 5 with dark theme
+- **UI Framework**: Bootstrap 5 with enhanced dark theme and glassmorphism design
 - **JavaScript**: Vanilla JavaScript with ES6 classes for client-side interactions
-- **Styling**: Custom CSS with CSS variables for theme consistency
-- **Icons**: Font Awesome for visual elements
+- **Styling**: Advanced CSS with gradient backgrounds, backdrop filters, and modern animations
+- **Visual Design**: Glassmorphism effects, gradient overlays, enhanced card hover effects
+- **Icons**: Font Awesome with gradient text effects and enhanced typography
 
 ### Backend Architecture
 - **Framework**: Flask (Python web framework)
