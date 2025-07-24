@@ -530,4 +530,3 @@ function refreshEvents() {
     eventManager.updateStats();
     eventManager.showToast('Events refreshed successfully');
 }
-}
