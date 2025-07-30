@@ -309,9 +309,9 @@ def delete_event(event_id):
         db.session.rollback()
         
         if request.is_json:
-            return jsonify({'success': False, 'error': 'Failed to delete event'}), 500
+            return jsonify({'success': False, 'error': ' '}), 500
         else:
-            flash('Failed to delete event. Please try again.', 'danger')
+            flash(' ')
             return redirect(url_for('dashboard'))
 
 

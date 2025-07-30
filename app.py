@@ -7,7 +7,9 @@ from flask_login import LoginManager
 from flask_cors import CORS
 from sqlalchemy.orm import DeclarativeBase
 from werkzeug.middleware.proxy_fix import ProxyFix
-
+from dotenv import load_dotenv
+load_dotenv()
+print("DATABASE_URL =", os.environ.get("DATABASE_URL"))
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
 

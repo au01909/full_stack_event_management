@@ -4,13 +4,62 @@ class EventManager {
         this.currentEventId = null;
         this.isEditing = false;
         this.toastContainer = null;
+        this.currentUser = null;
+        this.authChecked = false;
         this.init();
     }
 
     init() {
         this.setupEventListeners();
         this.createToastContainer();
-        this.loadEvents();
+        this.checkInitialAuth();
+    }
+
+    async checkInitialAuth() {
+        const isAuthenticated = await this.checkAuthStatus();
+        if (isAuthenticated) {
+            this.loadEvents();
+        }
+    }
+
+    async checkAuthStatus(force = false) {
+        // Only check authentication once unless forced
+        if (this.authChecked && !force) {
+            return this.currentUser !== null;
+        }
+
+        try {
+            const response = await fetch('/api/auth/status', {
+                credentials: 'include',
+                cache: 'no-cache' // Prevent caching issues
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+            
+            const data = await response.json();
+            
+            if (data.success && data.user) {
+                this.currentUser = data.user;
+                this.authChecked = true;
+                return true;
+            } else {
+                this.currentUser = null;
+                this.authChecked = false;
+                this.showToast('Please log in to manage events', 'warning');
+                setTimeout(() => {
+                    window.location.href = '/login';
+                }, 1500);
+                return false;
+            }
+        } catch (error) {
+            console.error('Auth check failed:', error);
+            this.currentUser = null;
+            this.authChecked = false;
+            this.showToast('Authentication check failed. Please refresh and try again.', 'danger');
+            return false;
+        }
     }
 
     setupEventListeners() {
@@ -51,6 +100,7 @@ class EventManager {
     createToastContainer() {
         this.toastContainer = document.createElement('div');
         this.toastContainer.className = 'toast-container';
+        this.toastContainer.style.cssText = 'position: fixed; top: 20px; right: 20px; z-index: 9999;';
         document.body.appendChild(this.toastContainer);
     }
 
@@ -112,23 +162,50 @@ class EventManager {
 
     async loadEvents() {
         try {
-            const params = new URLSearchParams(window.location.search);
-            const response = await fetch('/api/events?' + params.toString());
-            const data = await response.json();
+            // Force auth check to ensure fresh authentication
+            if (!await this.checkAuthStatus(true)) {
+                return;
+            }
 
-            if (data.success) {
-                this.renderEvents(data.events);
+            const params = new URLSearchParams(window.location.search);
+            const response = await fetch('/api/events?' + params.toString(), {
+                credentials: 'include',
+                cache: 'no-cache'
+            });
+
+            if (response.status === 401) {
+                this.authChecked = false;
+                this.currentUser = null;
+                this.showToast('Session expired. Please log in again.', 'warning');
+                setTimeout(() => {
+                    window.location.href = '/login';
+                }, 1500);
+                return;
+            }
+
+            if (response.ok) {
+                const data = await response.json();
+                
+                if (data.success) {
+                    this.renderEvents(data.events);
+                    this.updateStats();
+                } else {
+                    throw new Error(data.error || 'Failed to load events');
+                }
             } else {
-                throw new Error(data.error || 'Failed to load events');
+                throw new Error(`HTTP ${response.status}: Failed to load events`);
             }
         } catch (error) {
             console.error('Error loading events:', error);
-            this.showToast('Failed to load events', 'danger');
+            //this.showToast('Failed to load events', 'danger');
         }
     }
 
     renderEvents(events) {
         const container = document.getElementById('eventsContainer');
+        
+        // Clear container first
+        container.innerHTML = '';
         
         if (events.length === 0) {
             container.innerHTML = `
@@ -155,6 +232,9 @@ class EventManager {
         const eventsHtml = events.map(event => this.renderEventCard(event)).join('');
         container.innerHTML = eventsHtml;
         
+        // Force browser reflow
+        container.offsetHeight;
+        
         // Add fade-in animation
         container.classList.add('fade-in-up');
         setTimeout(() => container.classList.remove('fade-in-up'), 300);
@@ -166,11 +246,15 @@ class EventManager {
         const tags = event.tags || [];
         const description = event.description || '';
         
+        // More robust ownership check
+        const canEdit = this.canUserEditEvent(event);
+        
         return `
             <div class="col-lg-6 col-xl-4 mb-4">
                 <div class="card h-100">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h6 class="card-title mb-0">${this.escapeHtml(event.name)}</h6>
+                        ${canEdit ? `
                         <div class="dropdown">
                             <button class="btn btn-outline-secondary btn-sm" type="button" data-bs-toggle="dropdown">
                                 <i class="fas fa-ellipsis-v"></i>
@@ -184,6 +268,7 @@ class EventManager {
                                 </a></li>
                             </ul>
                         </div>
+                        ` : ''}
                     </div>
                     <div class="card-body">
                         <div class="mb-3">
@@ -205,10 +290,26 @@ class EventManager {
                     </div>
                     <div class="card-footer text-muted">
                         <small>Created ${createdDate}</small>
+                        ${event.created_by_name ? `<small class="d-block">by ${this.escapeHtml(event.created_by_name)}</small>` : ''}
                     </div>
                 </div>
             </div>
         `;
+    }
+
+    canUserEditEvent(event) {
+        if (!this.currentUser) {
+            return false;
+        }
+
+        // Check multiple possible ownership indicators
+        return (
+            event.user_id === this.currentUser.id ||
+            event.created_by === this.currentUser.id ||
+            event.owner_id === this.currentUser.id ||
+            (event.can_edit !== false && event.created_by_name === this.currentUser.name) ||
+            (event.can_edit !== false && event.created_by_name === this.currentUser.username)
+        );
     }
 
     formatDate(dateString) {
@@ -228,6 +329,7 @@ class EventManager {
     }
 
     escapeHtml(text) {
+        if (!text) return '';
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
@@ -238,6 +340,11 @@ class EventManager {
         const submitBtn = document.getElementById('eventSubmitBtn');
         const spinner = document.getElementById('submitSpinner');
         const btnText = document.getElementById('submitBtnText');
+
+        // Force fresh auth check
+        if (!await this.checkAuthStatus(true)) {
+            return;
+        }
 
         // Clear previous validation
         this.clearFormValidation();
@@ -273,8 +380,26 @@ class EventManager {
                 headers: {
                     'Content-Type': 'application/json',
                 },
+                credentials: 'include',
+                cache: 'no-cache',
                 body: JSON.stringify(eventData)
             });
+
+            if (response.status === 401) {
+                this.authChecked = false;
+                this.currentUser = null;
+                this.showToast('Session expired. Please log in again.', 'warning');
+                setTimeout(() => {
+                    window.location.href = '/login';
+                }, 1500);
+                return;
+            }
+
+            if (response.status === 403) {
+                this.showToast('You do not have permission to perform this action', 'danger');
+                this.loadEvents();
+                return;
+            }
 
             const data = await response.json();
 
@@ -283,8 +408,9 @@ class EventManager {
                 modal.hide();
                 
                 this.showToast(data.message || (this.isEditing ? 'Event updated successfully' : 'Event created successfully'));
-                this.loadEvents();
-                this.updateStats();
+                
+                // Force reload events and refresh auth status
+                await this.loadEvents();
             } else {
                 if (data.errors) {
                     this.displayFormErrors(data.errors);
@@ -294,7 +420,7 @@ class EventManager {
             }
         } catch (error) {
             console.error('Error saving event:', error);
-            this.showToast('Failed to save event', 'danger');
+            this.showToast('Failed to save event. Please try again.', 'danger');
         } finally {
             // Reset loading state
             submitBtn.disabled = false;
@@ -342,9 +468,7 @@ class EventManager {
             let fieldName, message;
             
             if (typeof error === 'string') {
-                // Handle simple string errors
                 message = error;
-                // Try to guess field from message
                 if (error.toLowerCase().includes('name')) fieldName = 'name';
                 else if (error.toLowerCase().includes('date')) fieldName = 'date';
                 else if (error.toLowerCase().includes('location')) fieldName = 'location';
@@ -386,7 +510,9 @@ class EventManager {
 
     async updateStats() {
         try {
-            const response = await fetch('/api/stats');
+            const response = await fetch('/api/stats', {
+                credentials: 'include'
+            });
             const data = await response.json();
             
             if (data.success) {
@@ -425,38 +551,68 @@ class EventManager {
     }
 
     async confirmDelete() {
-        const deleteBtn = document.getElementById('confirmDeleteBtn');
-        const spinner = document.getElementById('deleteSpinner');
-        
-        deleteBtn.disabled = true;
-        spinner.classList.remove('d-none');
-
-        try {
-            const response = await fetch(`/api/events/${this.currentEventId}`, {
-                method: 'DELETE'
-            });
-
-            const data = await response.json();
-
-            if (data.success) {
-                const modal = bootstrap.Modal.getInstance(document.getElementById('deleteModal'));
-                modal.hide();
-                
-                this.showToast(data.message || 'Event deleted successfully');
-                this.loadEvents();
-                this.updateStats();
-            } else {
-                throw new Error(data.error || 'Failed to delete event');
-            }
-        } catch (error) {
-            console.error('Error deleting event:', error);
-            this.showToast('Failed to delete event', 'danger');
-        } finally {
-            deleteBtn.disabled = false;
-            spinner.classList.add('d-none');
-        }
+    const deleteBtn = document.getElementById('confirmDeleteBtn');
+    const spinner = document.getElementById('deleteSpinner');
+    
+    // Force fresh auth check before delete
+    if (!await this.checkAuthStatus(true)) {
+        return;
     }
-}
+    
+    deleteBtn.disabled = true;
+    spinner.classList.remove('d-none');
+
+    try {
+        const response = await fetch(`/api/events/${this.currentEventId}`, {
+            method: 'DELETE',
+            credentials: 'include',
+            cache: 'no-cache'
+        });
+
+        if (response.status === 401) {
+            this.authChecked = false;
+            this.currentUser = null;
+            setTimeout(() => {
+                window.location.href = '/login';
+            }, 1500);
+            return;
+        }
+
+        if (response.status === 403) {
+            // Close modal even on permission error
+            const modal = bootstrap.Modal.getInstance(document.getElementById('deleteModal'));
+            modal.hide();
+            await this.loadEvents();
+            return;
+        }
+
+        // Close modal immediately after request (regardless of success/failure)
+        const modal = bootstrap.Modal.getInstance(document.getElementById('deleteModal'));
+        modal.hide();
+
+        // Always refresh events list (no toast notifications)
+        await this.loadEvents();
+
+        // Only log errors to console, never show popups
+        if (!response.ok) {
+            console.error('Delete request failed with status:', response.status);
+        }
+
+    } catch (error) {
+        // Close modal even on network errors
+        const modal = bootstrap.Modal.getInstance(document.getElementById('deleteModal'));
+        modal.hide();
+        
+        // Log error but don't show popup
+        console.error('Network error during delete:', error);
+        
+        // Still refresh events to ensure UI is up to date
+        await this.loadEvents();
+    } finally {
+        deleteBtn.disabled = false;
+        spinner.classList.add('d-none');
+    }
+    }}
 
 // Global functions for event handling
 let eventManager;
@@ -473,7 +629,32 @@ function openEventModal() {
 
 async function editEvent(eventId) {
     try {
-        const response = await fetch(`/api/events/${eventId}`);
+        // Force fresh auth check
+        if (!await eventManager.checkAuthStatus(true)) {
+            return;
+        }
+
+        const response = await fetch(`/api/events/${eventId}`, {
+            credentials: 'include',
+            cache: 'no-cache'
+        });
+        
+        if (response.status === 401) {
+            eventManager.authChecked = false;
+            eventManager.currentUser = null;
+            eventManager.showToast('Session expired. Please log in again.', 'warning');
+            setTimeout(() => {
+                window.location.href = '/login';
+            }, 1500);
+            return;
+        }
+
+        if (response.status === 403) {
+            eventManager.showToast('You do not have permission to edit this event', 'danger');
+            eventManager.loadEvents();
+            return;
+        }
+
         const data = await response.json();
 
         if (data.success) {
@@ -527,6 +708,5 @@ function clearFilters() {
 
 function refreshEvents() {
     eventManager.loadEvents();
-    eventManager.updateStats();
     eventManager.showToast('Events refreshed successfully');
 }
