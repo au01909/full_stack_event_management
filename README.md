@@ -1,95 +1,90 @@
-📅 EventFlow – Scalable Event Management App
-EventFlow is a full-stack event management platform built using Flask, PostgreSQL, Redis, and Bootstrap. It supports user registration, login, and real-time CRUD operations on user-specific events via modals and asynchronous JavaScript. Designed for scalability and modern UX, EventFlow is perfect for personal use, small teams, or academic portfolios.
+# EventFlow 🗓️
 
-🚀 Features
-🔐 User Authentication
+A modern event management web application built with Flask, PostgreSQL, and Redis, supporting real-time updates, user authentication, and dynamic modals for a seamless user experience.
 
-Secure login/register via Flask-Login
+---
 
-Passwords hashed using Werkzeug
+## 🚀 Features
 
-📅 Event CRUD (Create, Read, Update, Delete)
+- 🔐 **User Authentication** (Login, Register, Logout)
+- 👤 **User-Specific Events**: Events tied to logged-in users
+- 📅 **Event CRUD Operations**:
+  - Create, Edit, Delete, View
+  - All through Bootstrap modals
+- ⚡ **Live UI Updates** with Fetch API (no page reloads)
+- 🧠 **Permissions** enforced: Only creators can edit/delete
+- 🧾 **Logging**: All actions are logged for transparency
+- 📦 **PostgreSQL**: Structured event/user data
+- 💾 **Redis (Planned)**: For real-time pub/sub updates
+- 🐳 **Docker-ready** deployment architecture
 
-Users can manage their own events
+---
 
-Bootstrap modals and Fetch API for dynamic UI updates
+## 🧠 Tech Stack
 
-Confirm delete dialogs with loading spinners
+| Layer             | Technology           |
+|------------------|----------------------|
+| Backend          | Flask + SQLAlchemy   |
+| Frontend         | Bootstrap + JS       |
+| Database         | PostgreSQL           |
+| Real-time Layer  | Redis (via pub/sub)  |
+| Auth             | Flask-Login          |
+| Deployment       | Gunicorn, Docker     |
+| ORM              | SQLAlchemy           |
+| Logging          | Python's logging     |
 
-⚡ Real-Time UX
+## ✅ Setup & Run Locally
 
-JS Fetch API for updating the UI without full page reloads
-
-Spinner + toast feedback for user actions
-
-🧠 Permissions & Logging
-
-Events are tied to logged-in users only
-
-All major actions logged with timestamps
-
-🗃️ Database & Storage
-
-PostgreSQL used via SQLAlchemy ORM
-
-Redis ready for future real-time enhancements (e.g. live event feeds)
-
-🐳 Deployment-Ready
-
-Dockerfile + requirements.txt for easy setup
-
-Scalable backend logic separated in blueprints
-
-🧰 Tech Stack
-Layer	Technology
-Frontend	HTML, Bootstrap 5, JavaScript (Fetch API)
-Backend	Python Flask (Blueprints, SQLAlchemy, Flask-Login)
-Database	PostgreSQL (user & event models)
-Real-time Prep	Redis (pub/sub hooks ready)
-Deployment	Docker, Gunicorn, Nginx
-
-
-🧪 Setup Instructions
-🧱 Local Setup (Dev)
-bash
-Copy
-Edit
-# Clone the repo
-git clone https://github.com/your-username/eventflow.git
-cd eventflow
-
-# Create and activate a virtual environment
+### 1. Clone & Install
+```bash
+git clone https://github.com/YOUR_USERNAME/EventFlow.git
+cd EventFlow
 python -m venv venv
-source venv/bin/activate  # on Windows use venv\Scripts\activate
-
-# Install dependencies
+source venv/bin/activate  # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 
-# Set up PostgreSQL DB
-createdb eventflow_db
+2. Configure Environment
+Create .env file:
 
-# Run migrations
-flask db upgrade
+env
+Copy
+Edit
+FLASK_APP=run.py
+FLASK_ENV=development
+SECRET_KEY=your_secret
+DATABASE_URL=postgresql://user:password@localhost/eventflow
 
-# Start the app
-flask run
-🐳 Docker Deployment
+3. Run the App
 bash
 Copy
 Edit
-# Build Docker image
-docker build -t eventflow .
+flask db init
+flask db migrate
+flask db upgrade
+flask run
 
-# Run container (configure ENV vars in Dockerfile or docker-compose)
-docker run -p 8000:8000 eventflow
-Add Nginx for production reverse proxy and SSL.
 
-🌐 Core Endpoints
-Method	Endpoint	Description
-GET	/	Dashboard (auth required)
-POST	/register	Register new user
-POST	/login	Login user
-GET	/logout	Logout user
-POST	/events/create	Create new event
-POST	/events/edit/<id>	Edit event
-DELETE	/api/events/<id>	Delete event via JS API
+🔍 How It Works
+🧾 Auth System
+  Built using Flask-Login
+  Routes: /login, /register, /logout
+  Passwords hashed with werkzeug.security
+
+📅 Events
+  Stored in PostgreSQL
+  Events have user_id foreign key
+  Only owner can edit/delete
+  Fetched dynamically using /api/events
+
+⚡ Frontend Modals
+  Bootstrap-based modals
+  Event editing/deleting via JS fetch()
+  Confirmation and loading spinners supported
+
+🧠 Security
+  Routes protected with @login_required
+  Deletion checked against current_user.id
+
+🛠️ Logging
+  All actions (create/edit/delete) are logged with timestamps and user info
+
