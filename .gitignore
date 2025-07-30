@@ -1,0 +1,65 @@
+# Byte-compiled / cache files
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Environment files
+.env
+*.env
+
+# Database files (if local)
+*.sqlite3
+*.db
+
+# Logs and temp
+*.log
+*.bak
+*.tmp
+*.swp
+*.pid
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Virtual environments
+venv/
+env/
+.venv/
+.python-version
+
+# IDE folders
+.vscode/
+.idea/
+*.code-workspace
+
+# PyInstaller output
+build/
+dist/
+*.spec
+
+# Heroku / Render / Docker
+*.tar.gz
+*.egg-info/
+.Python
+instance/
+
+# Node stuff (if using npm or yarn for frontend)
+node_modules/
+
+# Compiled JS/CSS
+*.min.js
+*.min.css
+
+# Coverage reports
+htmlcov/
+.coverage
+.tox/
+.nox/
+.coverage.*
+
+# Redis/mongo backup dumps (if any)
+dump.rdb
+*.gz
+*.bson
